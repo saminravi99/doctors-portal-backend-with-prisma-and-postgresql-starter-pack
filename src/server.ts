@@ -1,10 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 /* eslint-disable no-console */
 import { Server } from 'http'
 import app from './app'
 import config from './config/index'
 
 
-let server: Server
+let server: Server;
 
 async function bootstrap() {
   try {
