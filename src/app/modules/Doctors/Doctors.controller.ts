@@ -22,13 +22,23 @@ const createDoctor = async (req: Request, res: Response) => {
 const getDoctors = async (req: Request, res: Response) => {
   try {
     console.log(req.query)
-    const { limit = 10, page = 1, sortBy = "createdAt", sortOrder = "asc", searchTerm = "" } = req.query;
+    const {
+      limit = 10,
+      page = 1,
+      sortBy = 'createdAt',
+      sortOrder = 'asc',
+      searchTerm = '',
+      ...filterData
+    } = req.query
+
+    // console.log(filterData)
     const result = await doctorService.getDoctors(
       searchTerm as string,
       String(sortBy),
-      sortOrder as "asc" | "desc",
+      sortOrder as 'asc' | 'desc',
       Number(limit),
-      Number(page)
+      Number(page),
+      filterData,
     )
     res.status(200).json({
       status: 200,

@@ -8,33 +8,65 @@ const createDoctor = async (data: Doctor): Promise<Doctor> => {
 }
 
 const getDoctors = async (
-  searchTerm : string,
+  searchTerm: string,
   sortBy: string,
-  sortOrder: "asc" | "desc",
+  sortOrder: 'asc' | 'desc',
   limit: number,
-  page: number
+  page: number,
+  filterData,
 ): Promise<Doctor[] | any> => {
   const result = await prisma.doctor.findMany({
     include: {
       specilization: true,
     },
     where: {
-      
+      //   OR: [
+      //     {
+      //       fullName: {
+      //         contains: searchTerm,
+      //         mode: 'insensitive',
+      //       },
+      //     },
+      //     {
+      //       specilization: {
+      //         name: {
+      //           contains: searchTerm,
+      //           mode: 'insensitive',
+      //         },
+      //       },
+      //     },
+      //     {
+      //       qualification: {
+      //         contains: searchTerm,
+      //         mode: 'insensitive',
+      //       },
+      //     },
+      //   ],
+      specilization: {
+        name: {
+          equals: filterData.specialization as string,
+          mode: 'insensitive',
+        },
+      },
+      qualification: {
+        equals: filterData.qualification as string,
+        mode: 'insensitive',
+      },
     },
     take: limit,
     skip: (page - 1) * limit,
     orderBy: {
-      [sortBy]: sortOrder
-    }
+      [sortBy]: sortOrder,
+    },
   })
   const total = await prisma.doctor.count()
   return {
     meta: {
       page,
       limit,
-      total
+      total,
     },
-    data: result
+    data: result,
   }
 }
 
