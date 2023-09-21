@@ -1,13 +1,52 @@
 import { NextFunction, Request, Response } from "express";
 import { appointmentServices } from "./appointments.services";
 
-const createAppointment = async (req: Request, res: Response, next: NextFunction) => {
+const bookAppointment = async (req: Request, res: Response, next: NextFunction) => {
     try {
-        const { ...appointmentData } = req.body;
-        const appointment = await appointmentServices.createAppointment(appointmentData);
+        const { patientId, availableServiceId, appointmentDate } = req.body;
+        const appointment = await appointmentServices.bookAppointment(patientId, availableServiceId, appointmentDate);
         res.status(200).json({
             status: 'success',
             message: 'Appointment created successfully',
+            data: appointment
+        });
+    } catch (error) {
+        next(error)
+    }
+};
+const startAppointment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const appointment = await appointmentServices.startAppointment(id);
+        res.status(200).json({
+            status: 'success',
+            message: 'Appointment started successfully',
+            data: appointment
+        });
+    } catch (error) {
+        next(error)
+    }
+};
+const cancelAppointment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const appointment = await appointmentServices.cancelAppointment(id);
+        res.status(200).json({
+            status: 'success',
+            message: 'Appointment created successfully',
+            data: appointment
+        });
+    } catch (error) {
+        next(error)
+    }
+};
+const finishAppointment = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const appointment = await appointmentServices.finishAppointment(id);
+        res.status(200).json({
+            status: 'success',
+            message: 'Appointment completed successfully',
             data: appointment
         });
     } catch (error) {
@@ -20,7 +59,7 @@ const getAllAppointments = async (req: Request, res: Response, next: NextFunctio
         const appointments = await appointmentServices.getAllAppointments();
         res.status(200).json({
             status: 'success',
-            message: 'Appointments fetched successfully',
+            message: 'Appointments cancelled successfully',
             data: appointments.data,
         });
     } catch (error) {
@@ -72,7 +111,10 @@ const deleteAppointment = async (req: Request, res: Response, next: NextFunction
 };
 
 export const appointmentController = {
-    createAppointment,
+    bookAppointment,
+    startAppointment,
+    cancelAppointment,
+    finishAppointment,
     getAllAppointments,
     getSingleAppointment,
     updateAppointment,
