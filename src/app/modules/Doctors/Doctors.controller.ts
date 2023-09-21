@@ -1,71 +1,97 @@
-import { NextFunction, Request, Response } from 'express'
-import { doctorService } from './Doctors.services'
+/* eslint-disable @typescript-eslint/no-explicit-any */
+import { NextFunction, Request, Response } from 'express';
+import { doctorServices } from './doctors.services';
+
 
 const createDoctor = async (req: Request, res: Response, next: NextFunction) => {
-  try {
-    const data = req.body
-    const result = await doctorService.createDoctor(data)
-    res.status(200).json({
-      status: 200,
-      message: 'doctor created successfully',
-      data: result,
-    })
-  } catch (error) {
-    next(error)
-  }
-}
-
-const getDoctors = async (req: Request, res: Response) => {
-  try {
-    console.log(req.query)
+    try {
+        const { ...doctorData } = req.body;
+        const doctor = await doctorServices.createDoctor(doctorData);
+        res.status(200).json({
+            status: 'success',
+            message: 'Doctor created successfully',
+            data: doctor
+        });
+    } catch (error) {
+        next(error)
+    }
+};
+const getAllDoctors = async (req: Request, res: Response, next: NextFunction) => {
     const {
-      limit = 10,
-      page = 1,
-      sortBy = 'createdAt',
-      sortOrder = 'asc',
-      searchTerm = '',
-      ...filterData
-    } = req.query
+        page = 1,
+        limit = 10,
+        sortBy = "createdAt",
+        sortOrder = "asc",
+        searchTerm = "",
+        ...filtersData
+    } = req.query;
+    console.log(req.query)
+    try {
+        const doctors = await doctorServices.getAllDoctors(
+            Number(page),
+            Number(limit),
+            sortBy as string,
+            sortOrder as "asc" | "desc",
+            searchTerm as string,
+            filtersData as Record<string, unknown>
+        );
+        res.status(200).json({
+            status: 'success',
+            message: 'Doctors fetched successfully',
+            meta: doctors.meta,
+            data: doctors.data
+        });
+    } catch (error) {
+        next(error)
+    }
+};
+const getSingleDoctor = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const doctor = await doctorServices.getSingleDoctor(id);
+        res.status(200).json({
+            status: 'success',
+            message: 'Doctor fetched successfully',
+            data: doctor
+        });
+    } catch (error) {
+        next(error)
+    }
+};
+const updateDoctor = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const { ...doctorData } = req.body;
+        const doctor = await doctorServices.updateDoctor(id, doctorData);
+        res.status(200).json({
+            status: 'success',
+            message: 'Doctor updated successfully',
+            data: doctor
+        });
+    } catch (error) {
+        next(error)
+    }
+};
+const deleteDoctor = async (req: Request, res: Response, next: NextFunction) => {
+    try {
+        const { id } = req.params;
+        const doctor = await doctorServices.deleteDoctor(id);
+        res.status(200).json({
+            status: 'success',
+            message: 'Doctor deleted successfully',
+            data: doctor
+        });
+    } catch (error) {
+        next(error)
+    }
+};
 
-    // console.log(filterData)
-    const result = await doctorService.getDoctors(
-      searchTerm as string,
-      String(sortBy),
-      sortOrder as 'asc' | 'desc',
-      Number(limit),
-      Number(page),
-      filterData,
-    )
-    res.status(200).json({
-      status: 200,
-      message: 'doctors fetched successfully',
-      meta: result.meta,
-      data: result.data,
-    })
-  } catch (error) {
-    res.status(400).json({
-      status: 'error',
-      message: 'something went wrong',
-      error,
-    })
-  }
-}
 
-const getDoctor = async (req: Request, res: Response) => {
-  try {
-    const { id } = req.params
-    const result = await doctorService.getDoctor(id)
-    res.status(200).json({
-      status: 200,
-      message: 'doctor fetched successfully',
-      data: result,
-    })
-  } catch (error) {
-    res.status(400).json({
-      status: 'error',
-      message: 'something went wrong',
-      error,
-    })
-  }
-}
-export const doctorController = { createDoctor, getDoctors, getDoctor }
+
+export const doctorController = {
+    createDoctor,
+    getAllDoctors,
+    getSingleDoctor,
+    updateDoctor,
+    deleteDoctor
+};
