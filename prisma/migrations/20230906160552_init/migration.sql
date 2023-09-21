@@ -1,10 +1,10 @@
 -- CreateTable
 CREATE TABLE "doctors" (
     "id" TEXT NOT NULL,
-    "full_name" TEXT NOT NULL,
+    "fullName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "phone_number" TEXT NOT NULL,
-    "role" TEXT NOT NULL DEFAULT 'doctor',
+    "phoneNumber" TEXT NOT NULL,
+    "role" TEXT NOT NULL,
     "qualification" TEXT NOT NULL,
     "specialization_id" TEXT NOT NULL,
     "password" TEXT NOT NULL,
@@ -30,7 +30,10 @@ CREATE TABLE "specializations" (
 CREATE UNIQUE INDEX "doctors_email_key" ON "doctors"("email");
 
 -- CreateIndex
-CREATE UNIQUE INDEX "doctors_phone_number_key" ON "doctors"("phone_number");
+CREATE UNIQUE INDEX "doctors_phoneNumber_key" ON "doctors"("phoneNumber");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "specializations_name_key" ON "specializations"("name");
 
 -- AddForeignKey
 ALTER TABLE "doctors" ADD CONSTRAINT "doctors_specialization_id_fkey" FOREIGN KEY ("specialization_id") REFERENCES "specializations"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

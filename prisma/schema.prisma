@@ -11,57 +11,68 @@ datasource db {
 }
 
 model Doctor {
-  id               String         @id @default(uuid())
-  fullName         String         @map("full_name")
-  email            String         @unique
-  phoneNumber      String         @unique @map("phone_number")
+  id               String            @id @default(uuid())
+  fullName         String
+  email            String            @unique
+  phoneNumber      String            @unique
   role             String
   qualification    String
-  specializationId String         @map("specialization_id")
-  specialization   Specialization @relation(fields: [specializationId], references: [id])
+  specializationId String            @map("specialization_id")
+  specialization   Specialization    @relation(fields: [specializationId], references: [id])
   password         String
-  isPasswordReset  Boolean        @default(false) @map("is_password_reset")
-  createdAt        DateTime       @default(now()) @map("created_at")
-  updatedAt        DateTime       @updatedAt @map("updated_at")
+  isPasswordReset  Boolean           @default(false) @map("is_password_reset")
+  createdAt        DateTime          @default(now()) @map("created_at")
+  updatedAt        DateTime          @updatedAt @map("updated_at")
+  availability     AvailableDoctor[]
 
   @@map("doctors")
 }
 
 model Specialization {
-  id          String   @id @default(uuid())
-  name        String   @unique
+  id          String    @id @default(uuid())
+  name        String    @unique
   description String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
-  doctor      Doctor[]
+  createdAt   DateTime  @default(now()) @map("created_at")
+  updatedAt   DateTime  @updatedAt @map("updated_at")
+  doctors     Doctor[]
+  services    Service[]
 
   @@map("specializations")
 }
 
+//kalker class -> Patient,  Medical Profile,  Admin, Services, TimeSlots
+
+//porer class -> Available Doctor, Available Services, Appointment, Payment
+
 model Patient {
-  id          String   @id @default(uuid())
-  fullName    String   @map("full_name")
-  email       String   @unique
-  phoneNumber String   @unique @map("phone_number")
-  password    String   @unique
-  role        String
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id             String          @id @default(uuid())
+  fullName       String          @map("full_name")
+  email          String          @unique
+  phoneNumber    String          @unique @map("phone_number")
+  password       String          @unique
+  role           String
+  createdAt      DateTime        @default(now()) @map("created_at")
+  updatedAt      DateTime        @updatedAt @map("updated_at")
+  medicalProfile MedicalProfile?
+  appointments   Appointment[]
 
   @@map("patients")
 }
 
 model MedicalProfile {
   id               String   @id @default(uuid())
-  profilePricture  String   @map("profile_pricture")
+  profilePricture  String?  @map("profile_pricture")
   address          String
   dob              String   @map("date_of_birth")
   gender           String
-  medicalHistory   String   @map("medical_history")
+  medicalHistory   String?  @map("medical_history")
   emergencyContact String   @map("emergency_contact")
   profileStatus    String   @map("profile_status")
   createdAt        DateTime @default(now()) @map("created_at")
   updatedAt        DateTime @updatedAt @map("updated_at")
+
+  patientId String  @unique @map("patient_id")
+  patient   Patient @relation(fields: [patientId], references: [id])
 
   @@map("medical_history")
 }
@@ -73,6 +84,14 @@ model Appointment {
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
+  patientId String  @map("patient_id")
+  patient   Patient @relation(fields: [patientId], references: [id])
+
+  payment Payment?
+
+  availableServiceId String           @map("available_service_id")
+  availableService   AvailableService @relation(fields: [availableServiceId], references: [id])
+
   @@map("appointments")
 }
 
@@ -82,6 +101,16 @@ model AvailableDoctor {
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
 
+  doctorId String @map("doctor_id")
+  doctor   Doctor @relation(fields: [doctorId], references: [id])
+
+  slotId            String             @map("slot_id")
+  slot              TimeSlots          @relation(fields: [slotId], references: [id])
+
+  availableServices AvailableService[]
+
+  @@unique([doctorId, slotId, availableDate])
+  //it means doctorId, slotId and availableDate should be combinedly unique for each row. a doctor can have multiple slots on a day for a service but not the same slots for multiple services
   @@map("available_doctors")
 }
 
@@ -89,19 +118,36 @@ model AvailableService {
   id              String   @id @default(uuid())
   slotDate        DateTime @map("slot_date")
   availableStatus String   @map("available_status")
-  isBooked        Boolean  @map("is_booked")
+  isBooked        Boolean  @default(false) @map("is_booked")
   createdAt       DateTime @default(now()) @map("created_at")
   updatedAt       DateTime @updatedAt @map("updated_at")
 
+  appointments Appointment[]
+
+  serviceId String  @map("service_id")
+  service   Service @relation(fields: [serviceId], references: [id])
+
+  slotId String    @map("slot_id")
+  slot   TimeSlots @relation(fields: [slotId], references: [id])
+
+  availableDoctorId String           @map("available_doctor_id")
+  availableDoctor   AvailableDoctor? @relation(fields: [availableDoctorId], references: [id])
+
+  @@unique([slotId, serviceId, slotDate, availableDoctorId])
   @@map("available_services")
 }
 
 model Service {
-  id          String   @id @default(uuid())
-  name        String   @unique
-  description String?
-  createdAt   DateTime @default(now()) @map("created_at")
-  updatedAt   DateTime @updatedAt @map("updated_at")
+  id                String             @id @default(uuid())
+  name              String             @unique
+  description       String?
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  
+  availableServices AvailableService[]
+
+  specializationId String         @map("specialization_id")
+  specialization   Specialization @relation(fields: [specializationId], references: [id])
 
   @@map("services")
 }
@@ -110,8 +156,10 @@ model TimeSlots {
   id        String   @id @default(uuid())
   startTime DateTime @map("start_time")
 
-  createdAt DateTime @default(now()) @map("created_at")
-  updatedAt DateTime @updatedAt @map("updated_at")
+  createdAt         DateTime           @default(now()) @map("created_at")
+  updatedAt         DateTime           @updatedAt @map("updated_at")
+  availableDoctors  AvailableDoctor[]
+  availableServices AvailableService[]
 
   @@map("time_slots")
 }
@@ -123,6 +171,9 @@ model Payment {
   paymentStatus String   @map("payment_status")
   createdAt     DateTime @default(now()) @map("created_at")
   updatedAt     DateTime @updatedAt @map("updated_at")
+
+  appointmentId String      @unique @map("apoointment_id")
+  appointment   Appointment @relation(fields: [appointmentId], references: [id])
 
   @@map("payment")
 }
