@@ -40,10 +40,6 @@ model Specialization {
   @@map("specializations")
 }
 
-//kalker class -> Patient,  Medical Profile,  Admin, Services, TimeSlots
-
-//porer class -> Available Doctor, Available Services, Appointment, Payment
-
 model Patient {
   id             String          @id @default(uuid())
   fullName       String          @map("full_name")
@@ -104,13 +100,12 @@ model AvailableDoctor {
   doctorId String @map("doctor_id")
   doctor   Doctor @relation(fields: [doctorId], references: [id])
 
-  slotId            String             @map("slot_id")
-  slot              TimeSlots          @relation(fields: [slotId], references: [id])
+  slotId String    @map("slot_id")
+  slot   TimeSlots @relation(fields: [slotId], references: [id])
 
   availableServices AvailableService[]
 
   @@unique([doctorId, slotId, availableDate])
-  //it means doctorId, slotId and availableDate should be combinedly unique for each row. a doctor can have multiple slots on a day for a service but not the same slots for multiple services
   @@map("available_doctors")
 }
 
@@ -138,12 +133,12 @@ model AvailableService {
 }
 
 model Service {
-  id                String             @id @default(uuid())
-  name              String             @unique
-  description       String?
-  createdAt         DateTime           @default(now()) @map("created_at")
-  updatedAt         DateTime           @updatedAt @map("updated_at")
-  
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
   availableServices AvailableService[]
 
   specializationId String         @map("specialization_id")
