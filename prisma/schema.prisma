@@ -110,12 +110,13 @@ model AvailableDoctor {
 }
 
 model AvailableService {
-  id              String   @id @default(uuid())
-  slotDate        DateTime @map("slot_date")
-  availableStatus String   @map("available_status")
-  isBooked        Boolean  @default(false) @map("is_booked")
-  createdAt       DateTime @default(now()) @map("created_at")
-  updatedAt       DateTime @updatedAt @map("updated_at")
+  id             String   @id @default(uuid())
+  slotDate       DateTime @map("slot_date")
+  availableSeats Int      @map("available_seats")
+  isBooked       Boolean  @default(false) @map("is_booked")
+  fees           String
+  createdAt      DateTime @default(now()) @map("created_at")
+  updatedAt      DateTime @updatedAt @map("updated_at")
 
   appointments Appointment[]
 
@@ -148,8 +149,8 @@ model Service {
 }
 
 model TimeSlots {
-  id        String   @id @default(uuid())
-  startTime DateTime @map("start_time")
+  id        String @id @default(uuid())
+  startTime String @map("start_time")
 
   createdAt         DateTime           @default(now()) @map("created_at")
   updatedAt         DateTime           @updatedAt @map("updated_at")
