@@ -177,7 +177,7 @@ model Payment {
 model Admin {
   id              String  @id @default(uuid())
   fullName        String  @map("full_name")
-  email           String
+  email           String  @unique
   phoneNumber     String  @map("phone_number")
   password        String
   role            String
