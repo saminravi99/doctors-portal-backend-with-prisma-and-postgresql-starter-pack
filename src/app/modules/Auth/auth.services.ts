@@ -6,7 +6,7 @@ import prisma from '../../shared/prisma'
 const loginUser = async (payload: any): Promise<any> => {
   const { email, password }: { email: string; password: string } = payload
 
-  let isUserExist
+  let isUserExist: any;
   const admin = await prisma.admin.findUnique({
     where: {
       email,

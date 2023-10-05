@@ -2,71 +2,10 @@ import { TimeSlots } from '@prisma/client'
 import prisma from '../../shared/prisma'
 
 const createTimeSlot = async (timeSlot: TimeSlots): Promise<TimeSlots> => {
-  const result = await prisma.timeSlots.createMany({
-    data: [
-      {
-        startTime: '08:00 AM',
-      },
-      {
-        startTime: '08:30 AM',
-      },
-      {
-        startTime: '09:00 AM',
-      },
-      {
-        startTime: '09:30 AM',
-      },
-      {
-        startTime: '10:00 AM',
-      },
-      {
-        startTime: '10:30 AM',
-      },
-      {
-        startTime: '11:00 AM',
-      },
-      {
-        startTime: '11:30 AM',
-      },
-      {
-        startTime: '12:00 PM',
-      },
-      {
-        startTime: '12:30 PM',
-      },
-      {
-        startTime: '01:00 PM',
-      },
-      {
-        startTime: '01:30 PM',
-      },
-      {
-        startTime: '02:00 PM',
-      },
-      {
-        startTime: '02:30 PM',
-      },
-      {
-        startTime: '03:00 PM',
-      },
-      {
-        startTime: '03:30 PM',
-      },
-      {
-        startTime: '04:00 PM',
-      },
-      {
-        startTime: '04:30 PM',
-      },
-      {
-        startTime: '05:00 PM',
-      },
-      {
-        startTime: '05:30 PM',
-      },
-    ],
+  const result = await prisma.timeSlots.create({
+    data: timeSlot,
   })
-  // return result;
+  return result
 }
 
 const getAllTimeSlots = async (): Promise<TimeSlots[] | any> => {
