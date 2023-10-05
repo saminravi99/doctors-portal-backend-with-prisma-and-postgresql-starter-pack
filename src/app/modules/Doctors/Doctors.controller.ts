@@ -1,6 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { NextFunction, Request, Response } from 'express'
-import { doctorServices } from './doctors.services'
+import { doctorServices } from './Doctors.services'
 
 const createDoctor = async (
   req: Request,
