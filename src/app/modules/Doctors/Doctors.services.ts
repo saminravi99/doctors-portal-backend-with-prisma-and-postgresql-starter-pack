@@ -89,7 +89,7 @@ const getAllDoctors = async (
                 }
             }
         },
-        take: limit,
+        take: 100,
         skip: (page - 1) * limit,
         orderBy: {
             [sortBy]: sortOrder
