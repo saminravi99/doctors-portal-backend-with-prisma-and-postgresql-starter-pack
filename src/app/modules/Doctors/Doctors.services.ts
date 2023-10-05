@@ -76,7 +76,18 @@ const getAllDoctors = async (
             ]
         },
         include: {
-            specialization: true
+            specialization: true,
+            availability: {
+                include: {
+                    availableServices: {
+                        include: {
+                            service: true,
+                            slot: true
+                        }
+                    },
+                    slot: true
+                }
+            }
         },
         take: limit,
         skip: (page - 1) * limit,
@@ -100,6 +111,20 @@ const getSingleDoctor = async (id: string): Promise<Doctor | null> => {
     const result = await prisma.doctor.findUnique({
         where: {
             id: id
+        },
+        include: {
+            specialization: true,
+            availability: {
+                include: {
+                    availableServices: {
+                        include: {
+                            service: true,
+                            slot: true
+                        }
+                    },
+                    slot: true
+                }
+            }
         }
     });
     return result;

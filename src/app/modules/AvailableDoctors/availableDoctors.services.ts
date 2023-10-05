@@ -9,7 +9,17 @@ const createAvailableDoctor = async (availableDoctor: AvailableDoctor): Promise<
 };
 
 const getAllAvailableDoctors = async (): Promise<AvailableDoctor[] | any> => {
-    const result = await prisma.availableDoctor.findMany();
+    const result = await prisma.availableDoctor.findMany({
+        include: {
+            availableServices: {
+                include: {
+                    slot: true
+
+                }
+            },
+            slot: true
+        }
+    });
     const total = await prisma.availableDoctor.count();
     return {
         meta: {
@@ -23,6 +33,15 @@ const getSingleAvailableDoctor = async (id: string): Promise<AvailableDoctor | n
     const result = await prisma.availableDoctor.findUnique({
         where: {
             id: id
+        },
+        include: {
+            availableServices: {
+                include: {
+                    slot: true
+
+                }
+            },
+            slot: true
         }
     });
     return result;
