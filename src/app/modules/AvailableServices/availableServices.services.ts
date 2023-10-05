@@ -13,6 +13,7 @@ const createAvailableService = async (
 const getAllAvailableServices = async (): Promise<AvailableService[] | any> => {
     const result = await prisma.availableService.findMany({
         include: {
+
             service: {
                 include: {
                     specialization: {
@@ -32,7 +33,17 @@ const getAllAvailableServices = async (): Promise<AvailableService[] | any> => {
                     payment: true
                 }
             },
-            availableDoctor: true,
+            availableDoctor: {
+                include: {
+                    doctor: {
+                        include: {
+                            specialization: true
+                        }
+                    },
+                    availableServices: true
+                }
+            },
+
             slot: true,
 
         },
