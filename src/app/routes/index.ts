@@ -14,6 +14,7 @@ import { adminRoutes } from '../modules/Admins/admins.routes'
 import { authRoutes } from '../modules/Auth/auth.route'
 import { doctorRoutes } from '../modules/Doctors/Doctors.routes'
 
+
 const router = express.Router()
 
 const moduleRoutes: any[] = [
